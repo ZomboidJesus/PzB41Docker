@@ -1,0 +1,49 @@
+services:
+  zomboid-server-test:
+    build: .
+    container_name: zomboid-server-test
+    hostname: zomboid-server-test
+    networks:
+      - zomboid-tunnel
+
+    ports:
+      - "16261:16261/udp"
+      - "16261:16261/tcp"
+      - "16262-16267:16262-16267/udp"
+    environment:
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:?Admin password required}
+
+      - SERVER_NAME=${SERVER_NAME:-My Zomboid Test Server}
+      - SERVER_PASSWORD=${SERVER_PASSWORD:-}
+      - PUBLIC_SERVER=${PUBLIC_SERVER:-false}
+      - MAX_PLAYERS=${MAX_PLAYERS:-4}
+      - STEAM_BETA_BRANCH=${STEAM_BETA_BRANCH:-stable}
+
+      - JAVA_MEMORY=${JAVA_MEMORY:-4G}
+      - SERVER_PORT=${SERVER_PORT:-16261}
+
+      - DEBUG_ENABLED=${DEBUG_ENABLED:-false}
+      - DEBUG_STEP=${DEBUG_STEP:-}
+      - PAUSE_BEFORE_START=${PAUSE_BEFORE_START:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - VALIDATE_CONFIGS=${VALIDATE_CONFIGS:-true}
+      - NOSTEAM=true
+
+      - WORKSHOP_IDS=${WORKSHOP_IDS:-}
+      - MOD_IDS=${MOD_IDS:-}
+      - MAP_IDS=${MAP_IDS:-}
+
+    volumes:
+      - ./data/Zomboid:/home/steam/Zomboid
+      - ./data/steam-cache:/home/steam/Steam
+      - ./scripts:/scripts:ro
+
+    restart: unless-stopped
+
+    #Remove comments for debugging
+    #stdin_open: true
+    #tty: true
+
+networks:
+  zomboid-tunnel:
+    driver: bridge
